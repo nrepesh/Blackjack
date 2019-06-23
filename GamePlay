@@ -1,0 +1,79 @@
+# Set up the Player's chips
+chips = Chips()
+
+while True:
+    count = 0
+    print("Welcome to simplified blackjack with no Double-Down and card splits")
+    playing = True
+    
+    # Create & shuffle the deck, deal two cards to each player
+    deck = Deck(suits,ranks)
+    deck.shuffle()
+    
+    # Hand object for player and deal method called for two cards
+    player = Hand()
+    player.add_card(deck.deal())
+    player.add_card(deck.deal())
+    
+    # Hand object for dealer and deal method called for two cards
+    dealer = Hand()
+    dealer.add_card(deck.deal())
+    dealer.add_card(deck.deal())    
+    
+    # Prompt the Player for their bet
+    take_bet(chips)
+    
+    # Show cards (but keep one dealer card hidden)
+    show_some(player,dealer)
+    
+    while playing:  # recall this variable from our hit_or_stand function
+        
+        # Prompt for Player to Hit or Stand
+        hit_or_stand(deck,player)
+        
+        # Show cards (but keep one dealer card hidden)
+        show_some(player,dealer)
+        
+        # If player's hand exceeds 21, break out of loop
+        if player.value > 21: 
+            break
+        else:
+            continue
+      
+    # If Player hasn't busted, play Dealer's hand until Dealer reaches 17
+    while player.value <= 21:
+        if dealer.value < player.value:
+            hit(deck,dealer)
+        else:
+            break
+    
+        # Show all cards
+    show_all(player,dealer)
+        # Run different winning scenarios
+    if player.value <= 21 and player.value > dealer.value:
+        player_wins(player,dealer,chips)
+    elif player.value > 21:    
+        player_busts(player,dealer,chips)
+    elif player.cards[0].rank in ['Ace', 'King', 'Queen', 'Jack'] and player.cards[1].rank in ['Ace']:
+        black_jack(player,chips)
+    elif player.cards[1].rank in ['Ace', 'King', 'Queen', 'Jack'] and player.cards[0].rank in ['Ace']:
+        black_jack(player,chips)
+    elif dealer.value > 21:
+        dealer_busts(player,dealer,chips)
+    elif dealer.value <= 21 and dealer.value > player.value:
+        dealer_wins(player,dealer,chips)
+    elif player.value == dealer.value:
+        push(player,dealer)
+        
+    
+    # Inform Player of their chips total 
+    print(' ')
+    print('Your new chips amount is: ${}'.format(chips.total))
+    
+    # Ask to play again
+    again = input('Do you want to play again? Yes or No ')
+    if again[0].lower() == 'y':
+        continue
+    elif again[0].lower() == 'n':
+        print('Thank you for playing blackjack')
+        break
